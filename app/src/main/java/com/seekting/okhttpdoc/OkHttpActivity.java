@@ -2,13 +2,16 @@ package com.seekting.okhttpdoc;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.io.IOException;
 
+import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
 
 public class OkHttpActivity extends Activity {
 
@@ -19,17 +22,29 @@ public class OkHttpActivity extends Activity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                OkHttpClient okHttpClient = new OkHttpClient();
-                Request.Builder builder = new Request.Builder();
-                builder.url("http://www.baidu.com");
-                try {
-                    Response response = okHttpClient.newCall(builder.build()).execute();
-                    String str = response.body().string();
-                    Log.d("seekting", "str" + str);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                request();
+
             }
         }).start();
+        String ids = null;
+        testNullable(ids);
+    }
+
+    private void request() {
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request.Builder builder = new Request.Builder();
+        builder.url("http://www.baidu.com");
+        Call call = okHttpClient.newCall(builder.build());
+        try {
+            Response response = call.execute();
+            String str = response.body().string();
+            Log.d("seekting", "OkHttpActivity.run()" + str);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void testNullable(@NonNull String ids) {
+        ids.toCharArray();
     }
 }
