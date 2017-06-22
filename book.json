@@ -1,0 +1,32 @@
+{
+  "title": "OkHttp源码解析",
+  "description": "OkHttp源码解析",
+  "language": "zh-hans",
+  "plugins": [
+    "prism",
+    "yahei",
+    "katex",
+    "-search",
+    "splitter"
+  ],
+  "pluginsConfig": {
+    "fontSettings": {
+      "theme": "sepia",
+      "family": "Courier New",
+      "size": 2
+    }
+
+  },
+  "pdf": {
+    "pageNumbers": true,
+    "fontSize": 10,
+    "fontFamily": "Arial",
+    "paperSize": "a4",
+    "margin": {
+      "right": 20,
+      "left": 20,
+      "top": 30,
+      "bottom": 50
+    }
+  }
+}
