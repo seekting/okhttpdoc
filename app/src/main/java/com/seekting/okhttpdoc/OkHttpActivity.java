@@ -33,6 +33,10 @@ public class OkHttpActivity extends Activity {
 
             }
         }).start();
+
+        Request.Builder builder=new Request.Builder();
+        builder.url(url);
+        Log.d("seekting","OkHttpActivity.onCreate()"+builder.url);
     }
 
     private void newOkHttpClient() {
@@ -65,6 +69,7 @@ public class OkHttpActivity extends Activity {
         Call call = okHttpClient.newCall(builder.build());
         try {
             Response response = call.execute();
+
             String str = response.body().string();
             Log.d("seekting", "OkHttpActivity.run()" + str);
         } catch (IOException e) {
