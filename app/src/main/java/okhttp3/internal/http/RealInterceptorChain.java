@@ -15,6 +15,8 @@
  */
 package okhttp3.internal.http;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.List;
 import okhttp3.Connection;
@@ -89,6 +91,7 @@ public final class RealInterceptorChain implements Interceptor.Chain {
     RealInterceptorChain next = new RealInterceptorChain(
         interceptors, streamAllocation, httpCodec, connection, index + 1, request);
     Interceptor interceptor = interceptors.get(index);
+    Log.d("seekting","RealInterceptorChain.proceed()"+interceptor);
     Response response = interceptor.intercept(next);
 
     // Confirm that the next interceptor made its required call to chain.proceed().

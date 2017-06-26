@@ -20,7 +20,8 @@ import okio.BufferedSink;
 
 public class OkHttpActivity extends Activity {
 
-    private String url = "http://testpolamall.i.360overseas.com/NoEncrypt/mall";
+//    private String url = "http://testpolamall.i.360overseas.com/NoEncrypt/mall";
+    private String url = "http://username:password@example.com/path";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +72,7 @@ public class OkHttpActivity extends Activity {
             Response response = call.execute();
 
             String str = response.body().string();
-            Log.d("seekting", "OkHttpActivity.run()" + str);
+            Log.d("seekting", "OkHttpActivity.run()" + builder.url.redact());
         } catch (IOException e) {
             e.printStackTrace();
         }

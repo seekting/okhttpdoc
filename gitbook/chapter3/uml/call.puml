@@ -15,4 +15,12 @@ interface Factory {
 }
 
 Factory ..> Call
+
+Call <|-- RealCall
+class RealCall{
+public void enqueue(Callback responseCallback)
+Response getResponseWithInterceptorChain()
+
+
+}
 @enduml

@@ -1,0 +1,22 @@
+@startuml
+
+interface Chain{
+Request request();
+Response proceed(Request request) throws IOException;
+Connection connection();
+}
+interface Interceptor{
+
+Response intercept(Chain chain)
+}
+Interceptor <|.. RetryAndFollowUpInterceptor
+Interceptor <|.. BridgeInterceptor
+Interceptor <|.. CacheInterceptor
+Interceptor <|.. ConnectInterceptor
+Interceptor <|.. CallServerInterceptor
+RealInterceptorChain --|> Chain
+Chain <..Interceptor
+Chain ..> Request
+
+Interceptor ..> Response
+@enduml

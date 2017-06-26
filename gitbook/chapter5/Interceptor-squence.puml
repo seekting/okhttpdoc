@@ -1,0 +1,28 @@
+@startuml
+Client->RealCall:execute
+RealCall->RealCall:getResponseWithInterceptorChain
+RealCall->RealCall:new RealInterceptorChain
+RealCall->RealInterceptorChain:proceed(Request)
+
+RealInterceptorChain->RealInterceptorChain:next=new RealInterceptorChain(index+1)
+
+RealInterceptorChain->RetryAndFollowUpInterceptor:intercept(next)
+note right:此处会处理重试，如果超过重试次数会直接把Response返回给Chain->Call
+RetryAndFollowUpInterceptor->RealInterceptorChain:proceed(Request)
+RealInterceptorChain->RealInterceptorChain:next=new RealInterceptorChain(index+1)
+RealInterceptorChain->CacheInterceptor:intercept(next)
+note right:此处会处理缓存，通过DiskLruCache获取，如果拿到缓存就返回给Chain->Call
+CacheInterceptor->RealInterceptorChain:proceed(Request)
+RealInterceptorChain->RealInterceptorChain:next=new RealInterceptorChain(index+1)
+RealInterceptorChain->ConnectInterceptor:intercept(next)
+note right:此处没有拦截操作，只是把任务交给了CallServerInterceptor
+ConnectInterceptor->RealInterceptorChain:proceed(Request)
+RealInterceptorChain->RealInterceptorChain:next=new RealInterceptorChain(index+1)
+RealInterceptorChain->CallServerInterceptor:intercept(next)
+note right:此处走最终的联网操作
+
+
+CallServerInterceptor-->RealInterceptorChain:response
+RealInterceptorChain-->RealCall:Response
+
+@enduml

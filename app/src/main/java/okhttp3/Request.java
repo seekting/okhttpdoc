@@ -98,7 +98,7 @@ public final class Request {
   }
 
   public static class Builder {
-    HttpUrl url;
+   public HttpUrl url;
     String method;
     Headers.Builder headers;
     RequestBody body;
