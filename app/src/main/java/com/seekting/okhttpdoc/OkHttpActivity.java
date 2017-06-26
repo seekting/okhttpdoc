@@ -36,7 +36,7 @@ public class OkHttpActivity extends Activity {
 
         Request.Builder builder=new Request.Builder();
         builder.url(url);
-        Log.d("seekting","OkHttpActivity.onCreate()"+builder.url);
+//        Log.d("seekting","OkHttpActivity.onCreate()"+builder.url);
     }
 
     private void newOkHttpClient() {

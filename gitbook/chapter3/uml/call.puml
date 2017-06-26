@@ -1,26 +1,18 @@
 @startuml
 
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
+interface Call extends Cloneable {
+Request request();
+Response execute() throws IOException;
+void enqueue(Callback responseCallback);
+void cancel();
+boolean isExecuted();
+boolean isCanceled();
+Call clone();
 
-List <|-- AbstractList
-Collection <|-- AbstractCollection
-
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
-
-class ArrayList {
-Object[] elementData
-size()
+}
+interface Factory {
+    Call newCall(Request request);
 }
 
-enum TimeUnit {
-DAYS
-HOURS
-MINUTES
-}
-
+Factory ..> Call
 @enduml

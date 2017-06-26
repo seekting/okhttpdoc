@@ -1,4 +1,4 @@
-# Okhttp初探之Request
+# Okhttp初探--Request
 Request也是通过Builder模式构建的，可见Square比较喜欢用builder
 
 以下是Request的所有成员变量
