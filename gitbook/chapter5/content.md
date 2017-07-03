@@ -1,4 +1,4 @@
-#OKhttp 深入理解--责任链模式处理请求
+#OKhttp深入理解--责任链模式处理请求
 
 本章重点讲解OKHttp通过责任链的方式处理请求。不了解责任链的同学可以学习一下责任链设计模式。
 
@@ -145,5 +145,8 @@ public Response intercept(Chain chain) throws IOException {
 ```
 
 1.在执行下一个责任链的时候，如果有异常，它会调用recover来判断是否需要重新请求
+
 2.如果followUp重定向成功，会重新创建Request去发请求
+
 3.超时重试需要自己实现，OKHttp超时重试没做支持
+
