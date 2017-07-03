@@ -20,8 +20,8 @@ import okio.BufferedSink;
 
 public class OkHttpActivity extends Activity {
 
-//    private String url = "http://testpolamall.i.360overseas.com/NoEncrypt/mall";
-    private String url = "http://username:password@example.com/path";
+    private String url = "http://testpolamall.i.360overseas.com/NoEncrypt/mall";
+//    private String url = "http://username:password@example.com/path";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,18 +40,21 @@ public class OkHttpActivity extends Activity {
 //        Log.d("seekting","OkHttpActivity.onCreate()"+builder.url);
     }
 
-    private void newOkHttpClient() {
+    private OkHttpClient newOkHttpClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.readTimeout(2000, TimeUnit.MILLISECONDS);
         builder.writeTimeout(2000,TimeUnit.MILLISECONDS);
         builder.connectTimeout(2000,TimeUnit.MILLISECONDS);
+        builder.retryOnConnectionFailure(true);
         OkHttpClient okHttpClient = builder.build();
+        return okHttpClient;
     }
 
     private void requestPost() {
-        OkHttpClient okHttpClient = new OkHttpClient();
-        Request.Builder builder = new Request.Builder();
+
+        OkHttpClient okHttpClient = newOkHttpClient();
         final String body = "{\"version\":\"6\",\"data_ver\":\"\"}";
+        Request.Builder builder=new Request.Builder();
         builder.url(url);
         builder.addHeader("appInfo", "pola.cam.video.android|CN|zh_CN|20714382667|104488|2");
         builder.method("POST", new RequestBody() {
