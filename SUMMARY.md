@@ -4,4 +4,5 @@
 * [第三章 OKhttp初探－－Call](gitbook/chapter3/content.md)
 * [第四章 OKHttp初探－－Dispatcher](gitbook/chapter4/content.md)
 * [第五章 OKhttp深入理解--责任链模式处理请求](gitbook/chapter5/content.md)
+* [第六章 OKhttp深入理解--RetryAndFollowUpInterceptor](gitbook/chapter６/content.md)
 
