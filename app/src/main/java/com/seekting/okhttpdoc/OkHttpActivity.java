@@ -56,7 +56,8 @@ public class OkHttpActivity extends Activity {
         final String body = "{\"version\":\"6\",\"data_ver\":\"\"}";
         Request.Builder builder=new Request.Builder();
         builder.url(url);
-        builder.addHeader("appInfo", "pola.cam.video.android|CN|zh_CN|20714382667|104488|2");
+//        builder.addHeader("appInfo", "pola.cam.video.android|CN|zh_CN|20714382667|104488|2");
+        builder.addHeader("Content-Length", "1024");
         builder.method("POST", new RequestBody() {
             @Nullable
             @Override
@@ -65,8 +66,14 @@ public class OkHttpActivity extends Activity {
             }
 
             @Override
+            public long contentLength() throws IOException {
+                //此处返回-1
+                return super.contentLength();
+            }
+
+            @Override
             public void writeTo(BufferedSink sink) throws IOException {
-                sink.write(body.getBytes());
+                sink.write("hello".getBytes());
 
             }
         });
