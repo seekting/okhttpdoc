@@ -1,7 +1,7 @@
 dispatcher是做什么的
 底层是基于socket通讯
 okhttp的全局图
-
+DiskLruCache
 streamAllocation是什么
 
 

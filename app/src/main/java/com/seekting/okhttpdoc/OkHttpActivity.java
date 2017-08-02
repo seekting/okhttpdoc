@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
+import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -35,16 +36,17 @@ public class OkHttpActivity extends Activity {
             }
         }).start();
 
-        Request.Builder builder=new Request.Builder();
+        Request.Builder builder = new Request.Builder();
         builder.url(url);
 //        Log.d("seekting","OkHttpActivity.onCreate()"+builder.url);
     }
 
     private OkHttpClient newOkHttpClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.cache(new Cache(getCacheDir(), 5 * 1024 * 1024));
         builder.readTimeout(2000, TimeUnit.MILLISECONDS);
-        builder.writeTimeout(2000,TimeUnit.MILLISECONDS);
-        builder.connectTimeout(2000,TimeUnit.MILLISECONDS);
+        builder.writeTimeout(2000, TimeUnit.MILLISECONDS);
+        builder.connectTimeout(2000, TimeUnit.MILLISECONDS);
         builder.retryOnConnectionFailure(true);
         OkHttpClient okHttpClient = builder.build();
         return okHttpClient;
@@ -54,10 +56,10 @@ public class OkHttpActivity extends Activity {
 
         OkHttpClient okHttpClient = newOkHttpClient();
         final String body = "{\"version\":\"6\",\"data_ver\":\"\"}";
-        Request.Builder builder=new Request.Builder();
+        Request.Builder builder = new Request.Builder();
         builder.url(url);
-//        builder.addHeader("appInfo", "pola.cam.video.android|CN|zh_CN|20714382667|104488|2");
-        builder.addHeader("Content-Length", "1024");
+        builder.addHeader("appInfo", "pola.cam.video.android|CN|zh_CN|20714382667|104488|2");
+//        builder.addHeader("Content-Length", "1024");
         builder.method("POST", new RequestBody() {
             @Nullable
             @Override
@@ -73,7 +75,7 @@ public class OkHttpActivity extends Activity {
 
             @Override
             public void writeTo(BufferedSink sink) throws IOException {
-                sink.write("hello".getBytes());
+                sink.write(body.getBytes());
 
             }
         });
@@ -83,6 +85,7 @@ public class OkHttpActivity extends Activity {
 
             String str = response.body().string();
             Log.d("seekting", "OkHttpActivity.run()" + builder.url.redact());
+            Log.d("seekting", "OkHttpActivity.run()" + str);
         } catch (IOException e) {
             e.printStackTrace();
         }
