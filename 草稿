@@ -4,7 +4,8 @@ okhttp的全局图
 DiskLruCache
 LruCache
 streamAllocation是什么
-
+Authenticator 认证
+自定义拦截器
 
 cancel的实现
 
