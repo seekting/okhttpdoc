@@ -5,7 +5,8 @@ okhttp集成了websocket，使用websocket只需要这样写:
         OkHttpClient client = builder.build();
         Request.Builder requestBuilder = new Request.Builder();
         requestBuilder.url("ws://192.168.1.101:8888/ws");
-        final WebSocket webSocket = client.newWebSocket(requestBuilder.build(), new WebSocketListener() {
+        final WebSocket webSocket = client.newWebSocket(requestBuilder.build(),
+                                                        new WebSocketListener() {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
                 super.onOpen(webSocket, response);
