@@ -341,8 +341,7 @@ boolean writeOneFrame() throws IOException {
 
 ```
 
-####
-WebSocketReader的loopReader
+#### WebSocketReader的loopReader
 
 ```java
  public void loopReader() throws IOException {
@@ -354,6 +353,7 @@ WebSocketReader的loopReader
 ```
 
 只要receivedCloseCode==-1就一直执行processNextFrame
+
 1.解析reader
 
 2.读控制类的数据（如ping,pong,close等与业务无关的数据）
@@ -392,23 +392,24 @@ private void readHeader() throws IOException {
 
 ```
 读第一个byte也就是第一个8位的数，后四位是opcode:
-Opcode
+
 数据包类型（frame type），占4bits
-0x0：标识一个中间数据包
-0x1：标识一个text类型数据包
-0x2：标识一个binary类型数据包
-0x3-7：保留
-0x8：标识一个断开连接类型数据包
-0x9：标识一个ping类型数据包
-0xA：表示一个pong类型数据包
-0xB-F：保留
-isFinalFrame是不是最后一Frame，用第一位来表示
-isControlFrame是不是操作Frame
+
+0x0：标识一个中间数据包<br>
+0x1：标识一个text类型数据包<br>
+0x2：标识一个binary类型数据包<br>
+0x3-7：保留<br>
+0x8：标识一个断开连接类型数据包<br>
+0x9：标识一个ping类型数据包<br>
+0xA：表示一个pong类型数据包<br>
+0xB-F：保留<br>
+isFinalFrame是不是最后一Frame，用第一位来表示<br>
+isControlFrame是不是操作Frame<br>
 
 ##### 来看看readControlFrame代码
-1.处理ping
-2.处理pong
-3.处理关闭
+1.处理ping<br>
+2.处理pong<br>
+3.处理关闭<br>
 
   ```java
    switch (opcode) {
