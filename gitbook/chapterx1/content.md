@@ -54,7 +54,9 @@ HttpClient.newWebSocket()调用后会new 一个RealWebSocket
 
 ```
 
-RealWebSocket.java的构造函数:
+## RealWebSocket.java
+
+### 的构造函数:
 ```java
 public RealWebSocket(Request request, WebSocketListener listener, Random random) {
     if (!"GET".equals(request.method())) {//必需要是get请求
@@ -81,7 +83,7 @@ public RealWebSocket(Request request, WebSocketListener listener, Random random)
   }
 
 ```
-然后看它的connect:
+### connect:
 1.先是通过源request创建一个新的request，它会加上一些Header信息：Upgrade,Connection,Sec-WebSocket-Key等
 
 2.创建RealCall发第一次请求
@@ -143,7 +145,7 @@ public RealWebSocket(Request request, WebSocketListener listener, Random random)
 
 ```
 
-checkResponse:
+#### checkResponse:
 1.状态码是101表示握手成功，否则就是握手异常
 
 2.Connection的值必需是Upgrade
@@ -183,3 +185,270 @@ void checkResponse(Response response) throws ProtocolException {
     }
   }
 ```
+
+#### initReaderAndWriter:
+
+```java
+  public void initReaderAndWriter(
+      String name, long pingIntervalMillis, Streams streams) throws IOException {
+    synchronized (this) {
+      this.streams = streams;
+      this.writer = new WebSocketWriter(streams.client, streams.sink, random);
+      this.executor = new ScheduledThreadPoolExecutor(1, Util.threadFactory(name, false));
+      if (pingIntervalMillis != 0) {
+        executor.scheduleAtFixedRate(
+            new PingRunnable(), pingIntervalMillis, pingIntervalMillis, MILLISECONDS);
+      }
+      if (!messageAndCloseQueue.isEmpty()) {
+        runWriter(); // Send messages that were enqueued before we were connected.
+      }
+    }
+
+    reader = new WebSocketReader(streams.client, streams.source, this);
+  }
+
+```
+
+1.通过scheduleAtFixedRate每过一定的时间发ping
+
+2.如果消息队列（messageAndCloseQueue）不为空就执行一次write
+
+3.初始化WebSocketReader
+
+##### 心跳包之-发ping和接收pong的流程
+client发起ping,会收到server的pong，同样server发ping,client会回一个pong
+![ping-pong](ping-pong.png)
+
+
+pingRunnable会在executor中每隔一定的时间就执行一次(pingInterval可以配置)
+```java
+private final class PingRunnable implements Runnable {
+    PingRunnable() {
+    }
+
+    @Override public void run() {
+      writePingFrame();
+    }
+  }
+
+  void writePingFrame() {
+    WebSocketWriter writer;
+    synchronized (this) {
+      if (failed) return;
+      writer = this.writer;
+    }
+
+    try {
+      writer.writePing(ByteString.EMPTY);
+    } catch (IOException e) {
+      failWebSocket(e, null);
+    }
+  }
+
+```
+而pong则是服务器的返回:收到pong的返回，只是pongCount++
+```java
+  @Override public synchronized void onReadPong(ByteString buffer) {
+    // This API doesn't expose pings.
+    pongCount++;
+  }
+
+```
+
+如果服务器主动发ping会走到onReadPing，此时会把要发的pong加入到Queue，然后启动writer
+```java
+//作者用了一个Deque来装载所有服务器返回来的pong
+private final ArrayDeque<ByteString> pongQueue = new ArrayDeque<>();
+
+public synchronized void onReadPing(ByteString payload) {
+    // Don't respond to pings after we've failed or sent the close frame.
+    if (failed || (enqueuedClose && messageAndCloseQueue.isEmpty())) return;
+
+    pongQueue.add(payload);
+    runWriter();
+    pingCount++;
+}
+
+```
+
+runWriter只是执行了一个writerRunnable
+```java
+private void runWriter() {
+    assert (Thread.holdsLock(this));
+
+    if (executor != null) {
+      executor.execute(writerRunnable);
+    }
+  }
+
+```
+
+这个writerRunnable会循环执行writeOneFrame,如果返回true的话
+
+```java
+ this.writerRunnable = new Runnable() {
+      @Override public void run() {
+        try {
+          while (writeOneFrame()) {
+          }
+        } catch (IOException e) {
+          failWebSocket(e, null);
+        }
+      }
+    };
+
+```
+
+###### writeOneFrame代码
+
+```java
+boolean writeOneFrame() throws IOException {
+
+   //...ignore code
+      writer = this.writer;
+      pong = pongQueue.poll();
+      if (pong == null) {
+        messageOrClose = messageAndCloseQueue.poll();
+        if (messageOrClose instanceof Close) {
+            //...ignore code 处理Close的消息
+            this.executor.shutdown();
+          } else {
+           //...ignore code
+        }
+      }
+    }
+
+    try {
+      if (pong != null) {
+      //不为空就写pong
+        writer.writePong(pong);
+
+      } else if (messageOrClose instanceof Message) {
+       //...ignore code
+       //处理 message
+        sink.write(data);
+        sink.close();
+        synchronized (this) {
+          queueSize -= data.size();
+        }
+
+      } else if (messageOrClose instanceof Close) {
+       //...ignore code处理close
+
+     //...ignore code
+  }
+
+
+```
+
+####
+WebSocketReader的loopReader
+
+```java
+ public void loopReader() throws IOException {
+    while (receivedCloseCode == -1) {
+      reader.processNextFrame();
+    }
+  }
+
+```
+
+只要receivedCloseCode==-1就一直执行processNextFrame
+1.解析reader
+
+2.读控制类的数据（如ping,pong,close等与业务无关的数据）
+
+3.读消息（与业务相关）
+
+```java
+  void processNextFrame() throws IOException {
+    readHeader();
+    if (isControlFrame) {
+      readControlFrame();
+    } else {
+      readMessageFrame();
+    }
+  }
+
+```
+##### readHeader
+
+```java
+private void readHeader() throws IOException {
+    if (closed) throw new IOException("closed");
+
+    // Disable the timeout to read the first byte of a new frame.
+    int b0;
+    long timeoutBefore = source.timeout().timeoutNanos();
+    source.timeout().clearTimeout();
+    try {
+      b0 = source.readByte() & 0xff;
+    } finally {
+      source.timeout().timeout(timeoutBefore, TimeUnit.NANOSECONDS);
+    }
+     opcode = b0 & B0_MASK_OPCODE;//0b00001111
+     isFinalFrame = (b0 & B0_FLAG_FIN) != 0;//0b10000000
+     isControlFrame = (b0 & OPCODE_FLAG_CONTROL) != 0;//0b00001000
+
+```
+读第一个byte也就是第一个8位的数，后四位是opcode:
+Opcode
+数据包类型（frame type），占4bits
+0x0：标识一个中间数据包
+0x1：标识一个text类型数据包
+0x2：标识一个binary类型数据包
+0x3-7：保留
+0x8：标识一个断开连接类型数据包
+0x9：标识一个ping类型数据包
+0xA：表示一个pong类型数据包
+0xB-F：保留
+isFinalFrame是不是最后一Frame，用第一位来表示
+isControlFrame是不是操作Frame
+
+##### 来看看readControlFrame代码
+1.处理ping
+2.处理pong
+3.处理关闭
+
+  ```java
+   switch (opcode) {
+
+    static final int OPCODE_CONTROL_CLOSE = 0x8;
+     static final int OPCODE_CONTROL_PING = 0x9;
+     static final int OPCODE_CONTROL_PONG = 0xa;
+   }
+        case OPCODE_CONTROL_PING:
+          frameCallback.onReadPing(buffer.readByteString());
+          break;
+        case OPCODE_CONTROL_PONG:
+          frameCallback.onReadPong(buffer.readByteString());
+          break;
+        case OPCODE_CONTROL_CLOSE:
+          int code = CLOSE_NO_STATUS_CODE;
+          //...ignore code
+           frameCallback.onReadClose(code, reason);
+
+  ```
+
+##### readMessageFrame则是读取数据
+```java
+  private void readMessageFrame() throws IOException {
+    int opcode = this.opcode;
+    if (opcode != OPCODE_TEXT && opcode != OPCODE_BINARY) {
+      throw new ProtocolException("Unknown opcode: " + toHexString(opcode));
+    }
+
+    Buffer message = new Buffer();
+    readMessage(message);
+
+    if (opcode == OPCODE_TEXT) {
+      frameCallback.onReadMessage(message.readUtf8());
+    } else {
+      frameCallback.onReadMessage(message.readByteString());
+    }
+  }
+
+```
+
+
+
