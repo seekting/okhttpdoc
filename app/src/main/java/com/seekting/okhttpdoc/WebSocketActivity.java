@@ -24,15 +24,14 @@ public class WebSocketActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        ws://35.161.31.28:8888/ws. Post URL: 63cc18e390ee5ab8aff25ac243b41b59
-
+//        name = "Authorization"
+//        value = "63cc18e390ee5ab8aff25ac243b41b59"
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         OkHttpClient client = builder.build();
         Request.Builder requestBuilder = new Request.Builder();
         requestBuilder.url("ws://35.161.31.28:8888/ws");
         requestBuilder.addHeader("Sec-WebSocket-Version", "13");
-//        name = "Authorization"
-//        value = "63cc18e390ee5ab8aff25ac243b41b59"
-        requestBuilder.addHeader("Authorization", "63cc18e390ee5ab8aff25ac243b41b59");
+        requestBuilder.addHeader("Authorization", "49691cc0dad87f657ebec889ff45cbba");
         final WebSocket webSocket = client.newWebSocket(requestBuilder.build(), new WebSocketListener() {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
@@ -72,11 +71,7 @@ public class WebSocketActivity extends Activity {
             @Override
             public void onFailure(WebSocket webSocket, Throwable t, Response response) {
                 super.onFailure(webSocket, t, response);
-                try {
-                    Log.d("seekting", "WebSocketActivity.onFailure()" + response.body().string(), t);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                    Log.d("seekting", "WebSocketActivity.onFailure()", t);
             }
         });
     }
