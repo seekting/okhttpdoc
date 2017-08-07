@@ -92,3 +92,30 @@ public Response intercept(Chain chain) throws IOException {
 2.如果followUp重定向成功，会重新创建Request去发请求
 
 3.超时重试需要自己实现，OKHttp超时重试没做支持
+
+4.身份认证失败的话可以走重新认证身份的逻辑
+
+重点看followUpRequest
+
+```java
+ private Request followUpRequest(Response userResponse){
+    //...ignore code
+    int responseCode = userResponse.code();
+    final String method = userResponse.request().method();
+    switch (responseCode) {
+      case HTTP_PROXY_AUTH://407 代理服务器身份证异常
+        //...ignore code
+        return client.proxyAuthenticator().authenticate(route, userResponse);
+
+      case HTTP_UNAUTHORIZED://401 身份证异常
+        return client.authenticator().authenticate(route, userResponse);
+
+      case HTTP_PERM_REDIRECT://308
+      case HTTP_TEMP_REDIRECT://307
+        if (!method.equals("GET") && !method.equals("HEAD")) {
+          return null;
+        }
+    //...ignore code
+  }
+
+```

@@ -45,12 +45,12 @@ public class LocalServerActivity extends Activity {
                     @Override
                     public void writeTo(BufferedSink sink) throws IOException {
 
-                        sink.write("ok".getBytes());
+                        sink.write("200|ok".getBytes());
                     }
 
                     @Override
                     public long contentLength() throws IOException {
-                        return "ok".getBytes().length;
+                        return "200|ok".getBytes().length;
                     }
                 });
                 return b.build();
@@ -58,8 +58,8 @@ public class LocalServerActivity extends Activity {
         });
         OkHttpClient okHttpClient = builder.build();
         Request.Builder requestBuilder = new Request.Builder();
-        requestBuilder.url("http://192.168.1.108:8080/401");
-        final byte[] bytes = "over".getBytes();
+        requestBuilder.url("http://192.168.1.108:8080/statuscode");
+        final byte[] bytes = "401|authenticate fail".getBytes();
         requestBuilder.post(new RequestBody() {
             @Nullable
             @Override
