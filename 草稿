@@ -7,12 +7,12 @@ LruCache
 streamAllocation是什么
 Timeout Source是什么
 Sink
-Authenticator 认证
+
 自定义拦截器
 
 cancel的实现
 
-webSocket支持
+
 
 AsyncCall异步请求的实现
 
@@ -20,3 +20,6 @@ RealConnection实现真实连接
 
 okIO的逻辑
 
+webSocket支持 ok
+
+Authenticator 认证 ok
