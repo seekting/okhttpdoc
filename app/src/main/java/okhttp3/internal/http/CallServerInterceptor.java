@@ -15,10 +15,9 @@
  */
 package okhttp3.internal.http;
 
-import android.util.Log;
-
 import java.io.IOException;
 import java.net.ProtocolException;
+
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -72,8 +71,6 @@ public final class CallServerInterceptor implements Interceptor {
     }
 
     httpCodec.finishRequest();
-    Log.d("seekting","CallServerInterceptor.intercept()finishRequest");
-
     if (responseBuilder == null) {
       responseBuilder = httpCodec.readResponseHeaders(false);
     }
