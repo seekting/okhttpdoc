@@ -305,6 +305,7 @@ final class Http2Writer implements Closeable {
     if (outFinished) flags |= FLAG_END_STREAM;
     frameHeader(streamId, length, type, flags);
     sink.write(hpackBuffer, length);
+    //hpakBuffer的数据写入sink
 
     if (byteCount > length) writeContinuationFrames(streamId, byteCount - length);
   }

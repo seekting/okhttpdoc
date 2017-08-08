@@ -32,45 +32,45 @@ import javax.annotation.Nullable;
  * {@code limit} and beyond. There is a single owning segment for each byte array. Positions,
  * limits, prev, and next references are not shared.
  */
-final class Segment {
+public final class Segment {
   /** The size of all segments in bytes. */
-  static final int SIZE = 8192;
+  public static final int SIZE = 8192;
 
   /** Segments will be shared when doing so avoids {@code arraycopy()} of this many bytes. */
-  static final int SHARE_MINIMUM = 1024;
+  public static final int SHARE_MINIMUM = 1024;
 
-  final byte[] data;
+  public final byte[] data;
 
   /** The next byte of application data byte to read in this segment. */
-  int pos;
+  public int pos;
 
   /** The first byte of available data ready to be written to. */
-  int limit;
+  public  int limit;
 
   /** True if other segments or byte strings use the same byte array. */
-  boolean shared;
+  public boolean shared;
 
   /** True if this segment owns the byte array and can append to it, extending {@code limit}. */
-  boolean owner;
+  public boolean owner;
 
   /** Next segment in a linked or circularly-linked list. */
-  Segment next;
+  public Segment next;
 
   /** Previous segment in a circularly-linked list. */
-  Segment prev;
+  public Segment prev;
 
-  Segment() {
+  public Segment() {
     this.data = new byte[SIZE];
     this.owner = true;
     this.shared = false;
   }
 
-  Segment(Segment shareFrom) {
+  public Segment(Segment shareFrom) {
     this(shareFrom.data, shareFrom.pos, shareFrom.limit);
     shareFrom.shared = true;
   }
 
-  Segment(byte[] data, int pos, int limit) {
+  public  Segment(byte[] data, int pos, int limit) {
     this.data = data;
     this.pos = pos;
     this.limit = limit;

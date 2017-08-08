@@ -23,3 +23,7 @@ okIO的逻辑
 webSocket支持 ok
 
 Authenticator 认证 ok
+
+包括的内容有Sink,Source,streamAllocation,HttpCodec,RealConnection
+先从简单到复杂
+## Sink是什么？
