@@ -1,4 +1,4 @@
-# OkHttp-IO Segment及SegmentPool
+#  Segment及SegmentPool
 
 Segment是拥有一个byte数组的单元，翻译为分段，okhttp里的数据读写都是放在多个segment里，
 而segment可以看成一个节点，它有前节点和后节点。多个Segment组成了一个链式存储模式

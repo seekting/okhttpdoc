@@ -11,4 +11,6 @@
 * [OKhttp深入理解--CallServerInterceptor](gitbook/chapter11/content.md)
 * [OKhttp深入理解--Authenticate](gitbook/chapter12/content.md)
 * [OKhttp深入理解--WebSocket的支持](gitbook/chapter13/content.md)
+* [OkHttp-IO](gitbook/chapter14/content0.md)
+    * [Segment及SegmentPool](gitbook/chapter14/content1.md)
 
